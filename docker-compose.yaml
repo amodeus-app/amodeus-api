@@ -1,0 +1,14 @@
+version: "3.4"
+services:
+  api:
+    build: .
+    restart: on-failure
+    cap_drop:
+      - ALL
+    ports:
+      - "8000:8000"
+    configs:
+      - config.yaml
+configs:
+  config.yaml:
+    file: ./config.yaml
