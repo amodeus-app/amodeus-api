@@ -11,5 +11,5 @@ class _Embedded(BaseModel):
 
 
 class SearchPersonResult(BaseModel):
-    result: Annotated[_Embedded, Field(alias="_embedded")]
+    result: Annotated[_Embedded, Field(alias="_embedded")] = _Embedded(persons=[])
     page: Page
