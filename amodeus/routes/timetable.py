@@ -59,7 +59,7 @@ async def get_person_timetable(
 @router.get("/event/{event_id}/team", response_model=list[Person], operation_id="get_event_team")
 async def get_event_team(
     event_id: UUID,
-    client: Modeus = Depends(modeus),
+    client: Modeus = Depends(default_modeus),
 ) -> list[Person]:
     attendees = await client.get_event_team(event_id)
     return parse_event_team(attendees)
