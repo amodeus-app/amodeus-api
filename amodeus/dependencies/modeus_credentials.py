@@ -1,4 +1,4 @@
-from typing import Iterable, cast, AsyncIterable
+from typing import AsyncIterable, cast
 
 from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer

@@ -7,13 +7,19 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from ..dependencies import user_credentials
 from ..exceptions import LoginFailed
-from ..models.auth import Auth
+from ..models import Auth, Error
 from ..upstream import ModeusCredentials
 
 router = APIRouter()
 
 
-@router.post("/auth", response_model=Auth, operation_id="login")
+@router.post(
+    "/auth",
+    response_model=Auth,
+    operation_id="login",
+    responses={401: {"description": "Login failed", "model": Error}},
+    include_in_schema=False,
+)
 async def login(data: OAuth2PasswordRequestForm = Depends()) -> Auth:
     try:
         creds = await ModeusCredentials.login(data.username, data.password)

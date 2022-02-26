@@ -7,7 +7,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 
 from ..dependencies import default_modeus
-from ..models import Person
+from ..models import Person, Error
 from ..parsers import parse_people
 from ..upstream.requests import Modeus
 
@@ -23,7 +23,12 @@ async def search(
     return parse_people(people)
 
 
-@router.get("/person/{uuid}", response_model=Person, operation_id="get_person")
+@router.get(
+    "/person/{uuid}",
+    response_model=Person,
+    operation_id="get_person",
+    responses={404: {"description": "Nothing found", "model": Error}},
+)
 async def get_person(
     uuid: UUID,
     client: Modeus = Depends(default_modeus),
