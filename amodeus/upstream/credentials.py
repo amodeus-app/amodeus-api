@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from secrets import token_hex
-from typing import TYPE_CHECKING, Optional, Union, cast
+from typing import TYPE_CHECKING, cast
 
 import jwt
 from bs4 import BeautifulSoup
@@ -23,11 +23,11 @@ class ModeusCredentials:
     def __init__(
         self,
         token: str,
-        common_auth_id: Optional[str],
+        common_auth_id: str | None,
         *,
         auth_url: str = _AUTH_URL,
         client_id: str = _MODEUS_CLIENT_ID,
-        session: Optional[AsyncClient] = None,
+        session: AsyncClient | None = None,
     ) -> None:
         self._token = token
         self._auth_id = common_auth_id
@@ -38,7 +38,7 @@ class ModeusCredentials:
         self._auth_url = auth_url
 
     @staticmethod
-    def _extract_token_from_url(url: str) -> Optional[str]:
+    def _extract_token_from_url(url: str) -> str | None:
         if (match := _token_re.search(url)) is None:
             return None
         return match[1]
@@ -62,7 +62,7 @@ class ModeusCredentials:
         return auth_data
 
     @property
-    def token_data(self) -> dict[str, Union[int, str, list[str]]]:
+    def token_data(self) -> dict[str, int | str | list[str]]:
         return jwt.decode(self._token, options=dict(verify_signature=False))
 
     @property
@@ -74,7 +74,7 @@ class ModeusCredentials:
         return self._token
 
     @property
-    def common_auth_id(self) -> Optional[str]:
+    def common_auth_id(self) -> str | None:
         return self._auth_id
 
     @common_auth_id.setter
@@ -132,12 +132,12 @@ class ModeusCredentials:
 
         # Parsing response
         html = BeautifulSoup(html_text, "lxml")
-        error_tag: Optional[Tag] = html.find(id="errorText")
+        error_tag: Tag | None = html.find(id="errorText")
         if error_tag is not None and error_tag.text != "":
             raise LoginFailed(error_tag.text)
 
         # Auth succeeded, continuing auth flow to get the token
-        form: Optional[Tag] = html.form
+        form: Tag | None = html.form
         if form is None:
             raise CannotAuthenticate
         # TODO: SAMLRequest/-Response are base64-encoded XMLs, try to parse them

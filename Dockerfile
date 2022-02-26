@@ -1,4 +1,4 @@
-FROM python:3.9-slim AS build
+FROM python:3.10-slim AS build
 
 RUN pip install --no-cache-dir 'build~=0.6.0.post1'
 WORKDIR /build
@@ -8,7 +8,7 @@ RUN python -m build -w \
     && python -m venv /app \
     && /app/bin/python -m pip install $(find dist/ -iname '*.whl')[server]
 
-FROM python:3.9-slim AS runtime
+FROM python:3.10-slim AS runtime
 
 WORKDIR /app
 COPY --from=build /app ./

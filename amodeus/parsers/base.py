@@ -1,6 +1,6 @@
 __all__ = ["_lookup_object", "_lookup_objects"]
 
-from typing import Any, Iterator, Optional, TypeVar
+from typing import Any, Iterator, TypeVar
 from uuid import UUID
 
 _CT = TypeVar("_CT")
@@ -30,5 +30,5 @@ def _lookup_object(
     data: list[_CT],
     value: Any,
     strategy: str = "id",
-) -> Optional[_CT]:
+) -> _CT | None:
     return next(_lookup_objects(data, value, strategy), None)

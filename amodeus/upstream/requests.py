@@ -5,7 +5,7 @@ __all__ = [
 import urllib.parse
 from datetime import datetime, timedelta
 from functools import reduce
-from typing import Any, Union
+from typing import Any
 from uuid import UUID
 
 from httpx import Response
@@ -27,7 +27,7 @@ class Modeus:
 
     async def get_event_team(
         self,
-        event_id: Union[str, UUID],
+        event_id: str | UUID,
     ) -> GetTeamResult:
         resp = await self._timetable_api_request(
             "GET",
@@ -40,9 +40,9 @@ class Modeus:
 
     async def get_events(
         self,
-        person: Union[str, UUID],
+        person: str | UUID,
         start: datetime,
-        end: Union[timedelta, datetime] = timedelta(days=7),
+        end: timedelta | datetime = timedelta(days=7),
         *,
         size: int = 500,
     ) -> SearchEventsResult:
@@ -64,7 +64,7 @@ class Modeus:
 
     async def search_person_by_id(
         self,
-        uuid: Union[str, UUID],
+        uuid: str | UUID,
         *,
         page: int = 0,
         size: int = 25,

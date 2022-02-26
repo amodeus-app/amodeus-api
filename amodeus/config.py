@@ -1,7 +1,6 @@
 __all__ = ["Config", "RootAccountConfig", "load_config"]
 
 from pathlib import Path
-from typing import Union
 
 from pydantic import BaseModel, SecretStr
 from yaml import safe_load
@@ -16,7 +15,7 @@ class Config(BaseModel):
     root_account: RootAccountConfig
 
 
-def load_config(path: Union[Path, str] = "config.yaml") -> Config:
+def load_config(path: Path | str = "config.yaml") -> Config:
     if isinstance(path, str):
         path = Path(path)
     with path.open() as f:

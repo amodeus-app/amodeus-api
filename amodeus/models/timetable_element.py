@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from .base import BaseIDModel
 from .lesson import Lesson
@@ -11,6 +10,6 @@ class TimetableElement(BaseIDModel):
     lesson: Lesson
     start: datetime
     end: datetime
-    location: Optional[Location]
+    location: Location | None
     teachers: list[Person]
     # is_held: bool

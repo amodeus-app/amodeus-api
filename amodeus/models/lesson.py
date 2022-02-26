@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import BaseModel
 
 from .subject import Subject
@@ -9,6 +7,6 @@ class Lesson(BaseModel):
     subject: Subject
     name: str
     name_short: str
-    description: Optional[str]
+    description: str | None
     type: str
-    format: Optional[str]
+    format: str | None
