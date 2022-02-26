@@ -10,9 +10,6 @@ from httpx import URL, AsyncClient
 
 from ..exceptions import CannotAuthenticate, LoginFailed
 
-if TYPE_CHECKING:
-    from bs4 import Tag  # type: ignore[attr-defined]
-
 _token_re = re.compile(r"id_token=([a-zA-Z0-9\-_.]+)")
 
 _MODEUS_CLIENT_ID = "sKir7YQnOUu4G0eCfn3tTxnBfzca"
@@ -132,12 +129,12 @@ class ModeusCredentials:
 
         # Parsing response
         html = BeautifulSoup(html_text, "lxml")
-        error_tag: Tag | None = html.find(id="errorText")
+        error_tag = html.find(id="errorText")
         if error_tag is not None and error_tag.text != "":
             raise LoginFailed(error_tag.text)
 
         # Auth succeeded, continuing auth flow to get the token
-        form: Tag | None = html.form
+        form = html.form
         if form is None:
             raise CannotAuthenticate
         # TODO: SAMLRequest/-Response are base64-encoded XMLs, try to parse them

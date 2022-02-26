@@ -1,21 +1,22 @@
 __all__ = ["_lookup_object", "_lookup_objects"]
 
-from typing import Any, Iterator, TypeVar
+from typing import Any, Iterator, Mapping, TypeVar, cast
 from uuid import UUID
 
-_CT = TypeVar("_CT")
+_T = TypeVar("_T", Mapping[str, Any], Any)
 
 
 def _lookup_objects(
-    data: list[_CT],
+    data: list[_T],
     value: Any,
     strategy: str = "id",
-) -> Iterator[_CT]:
+) -> Iterator[_T]:
     lookup_chain = strategy.split(".")
     for el in data:
-        attr = el
+        attr: _T | None = el
         for k in lookup_chain:
-            if hasattr(attr, "get"):  # it is a dict or dict-like
+            if hasattr(attr, "get"):
+                attr = cast(Mapping[str, Any], attr)
                 attr = attr.get(k, None)
             else:
                 attr = getattr(attr, k, None)
@@ -27,8 +28,8 @@ def _lookup_objects(
 
 
 def _lookup_object(
-    data: list[_CT],
+    data: list[_T],
     value: Any,
     strategy: str = "id",
-) -> _CT | None:
-    return next(_lookup_objects(data, value, strategy), None)
+) -> _T | None:
+    return cast(_T | None, next(_lookup_objects(data, value, strategy), None))

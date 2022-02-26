@@ -14,12 +14,14 @@ def parse_events(resp: SearchEventsResult) -> list[TimetableElement]:
             event.get_link("course-unit-realization"),
         )
         if upstream_subject is None:
-            continue  # upstream bug
+            continue  # upstream bug, we can safely ignore this
         upstream_location = _lookup_object(
             resp.result.event_locations,
             event.id,
             "event_id",
         )
+        if upstream_location is None:
+            raise AttributeError
         full_location = upstream_location.custom_location
         building, room = None, None
         if full_location is None:
@@ -34,6 +36,8 @@ def parse_events(resp: SearchEventsResult) -> list[TimetableElement]:
                     resp.result.rooms,
                     room_id,
                 )
+                if upstream_room is None:
+                    raise AttributeError
                 building = Building(
                     number=int(upstream_room.building.name.lower().removeprefix("улк-")),
                     address=upstream_room.building.address,

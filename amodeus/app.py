@@ -32,7 +32,7 @@ app = FastAPI(
 )
 
 
-async def _update_creds(creds: ModeusCredentials, config: Config):
+async def _update_creds(creds: ModeusCredentials, config: Config) -> None:
     _log.info("Task loop started")
     while True:
         await sleep(600)  # 10 minutes
@@ -50,7 +50,7 @@ async def _update_creds(creds: ModeusCredentials, config: Config):
 
 
 @app.on_event("startup")
-async def _root_login():
+async def _root_login() -> None:
     config = load_config()
     app.state.config = config
     app.state.root_creds = await ModeusCredentials.login(
@@ -61,18 +61,18 @@ async def _root_login():
 
 
 @app.on_event("shutdown")
-async def _stop_tasks():
+async def _stop_tasks() -> None:
     app.state.root_creds_update.cancel()
 
 
 @app.exception_handler(HTTPStatusError)
-async def on_upstream_request_failed(request: Request, exc: HTTPStatusError):
+async def on_upstream_request_failed(request: Request, exc: HTTPStatusError) -> JSONResponse:
     _log.exception("Upstream error", exc_info=exc, extra={"request": request})
     return JSONResponse({"detail": "Something wrong with MODEUS :/"}, status_code=500)
 
 
 @app.exception_handler(500)
-async def on_500(request: Request, exc: Exception):
+async def on_500(request: Request, exc: Exception) -> JSONResponse:
     _log.exception("Internal server error", exc_info=exc, extra={"request": request})
     return JSONResponse({"detail": "Internal server error"}, status_code=500)
 
