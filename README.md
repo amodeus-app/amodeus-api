@@ -19,6 +19,7 @@ YOUR OWN RISK.
 
 - Clone this repo
 - Make sure docker and docker-compose are installed
+- Copy [example config](config.example.yaml), edit it and save as `config.yaml`
 - Run `docker-compose up -d --build`
 - Set up your client to use API at `http://<yourip>:8000`
 
@@ -29,7 +30,9 @@ YOUR OWN RISK.
 - Create virtualenv with `python -m venv .venv` and activate it
 - Modify sources as needed
 - Install an app with `pip install -e .[dev] .[server]`
+- Copy [example config](config.example.yaml), edit it and save as `config.yaml`
 - Run it with `uvicorn --reload amodeus.app:app`
+- Set up your client to use API at `http://<yourip>:8000`
 
 ## Roadmap
 
