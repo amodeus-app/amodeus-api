@@ -17,16 +17,16 @@ YOUR OWN RISK.
 
 ### For self-hosting
 
-- Clone this repo
 - Make sure docker and docker-compose are installed
 - Copy [example config](config.example.yaml), edit it and save as `config.yaml`
+- Copy [compose](docker-compose.yaml) file to the same directory as the config
 - Run `docker-compose up -d --build`
 - Set up your client to use API at `http://<yourip>:8000`
 
 ### For development
 
 - Clone this repo
-- Make sure Python 3.9+ is installed
+- Make sure Python 3.10+ is installed
 - Create virtualenv with `python -m venv .venv` and activate it
 - Modify sources as needed
 - Install an app with `pip install -e .[dev] .[server]`

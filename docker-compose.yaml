@@ -1,14 +1,17 @@
 version: "3.4"
+
 services:
   api:
-    build: .
-    restart: on-failure
+    image: ghcr.io/evgfilim1/amodeus-api
+    restart: unless-stopped
     cap_drop:
       - ALL
     ports:
-      - "8000:8000"
-    configs:
-      - config.yaml
-configs:
-  config.yaml:
+      - "${PORT:-8000}:8000"
+    secrets:
+      - source: config
+        target: /app/config.yaml
+
+secrets:
+  config:
     file: ./config.yaml

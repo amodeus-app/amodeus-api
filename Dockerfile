@@ -9,9 +9,11 @@ RUN python -m build -w \
     && /app/bin/python -m pip install $(find dist/ -iname '*.whl')[server]
 
 FROM python:3.10-slim AS runtime
+EXPOSE 8000
 
 WORKDIR /app
 COPY --from=build /app ./
-RUN ln -s /config.yaml config.yaml
+RUN useradd -MrUd / -s /usr/sbin/nologin app
 
+USER app
 ENTRYPOINT ["/app/bin/python", "-m", "uvicorn", "amodeus.app:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]

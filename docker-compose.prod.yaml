@@ -1,0 +1,28 @@
+version: "3.4"
+
+services:
+  api:
+    image: ghcr.io/evgfilim1/amodeus-api
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    secrets:
+      - source: config
+        target: /app/config.yaml
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.amodeus-api.entrypoints=https"
+      - "traefik.http.routers.amodeus-api.rule=Host(`api.amodeus.evgfilim1.me`)"
+      - "traefik.http.routers.amodeus-api.tls=true"
+      - "traefik.http.routers.amodeus-api.tls.certresolver=letsEncrypt"
+
+secrets:
+  config:
+    file: /home/github/amodeus-api/config.yaml
+
+networks:
+  traefik:
+    external: true
+
