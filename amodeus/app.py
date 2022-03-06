@@ -29,6 +29,8 @@ app = FastAPI(
         {"name": "search", "description": "Search people"},
         {"name": "timetable", "description": "Timetable"},
     ],
+    docs_url="/",
+    redoc_url=None,
 )
 
 
