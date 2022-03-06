@@ -7,7 +7,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 
 from ..dependencies import default_modeus
-from ..models import Person, Error
+from ..models import Error, Person
 from ..parsers import parse_people
 from ..upstream.requests import Modeus
 

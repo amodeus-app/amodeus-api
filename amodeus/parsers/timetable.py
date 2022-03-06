@@ -1,6 +1,7 @@
 import re
 
 from ..models import Building, Lesson, Location, Person, Subject, TimetableElement
+from ..upstream.models.event_attendee import EventAttendee
 from ..upstream.models.get_team_result import GetTeamResult
 from ..upstream.models.search_events_result import SearchEventsResult
 from .base import _lookup_object, _lookup_objects
@@ -91,8 +92,15 @@ def parse_events(resp: SearchEventsResult) -> list[TimetableElement]:
     return events
 
 
-def parse_event_team(resp: GetTeamResult) -> list[Person]:
+def _filter_role(attendee: EventAttendee, role: str | None) -> bool:
+    if role is None:
+        return True
+    return attendee.get_link("event-attendee-role") == role.upper()
+
+
+def parse_event_team(resp: GetTeamResult, role_filter: str | None = None) -> list[Person]:
     return [
         Person.parse_obj(_lookup_object(resp.result.persons, a.get_link("person")))
         for a in resp.result.event_attendees
+        if _filter_role(a, role_filter)
     ]
