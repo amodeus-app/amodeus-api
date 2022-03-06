@@ -17,7 +17,7 @@ _log = logging.getLogger(__name__)
 
 app = FastAPI(
     title="AModeus",
-    version="0.1.0-alpha.3",
+    version="0.1.0-alpha.4",
     description="Alternative MODEUS API",
     servers=[
         {"url": "https://api.amodeus.evgfilim1.me", "description": "Production server"},

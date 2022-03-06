@@ -51,6 +51,10 @@ def parse_events(resp: SearchEventsResult) -> list[TimetableElement]:
                 "links.event.href",
             )
         )
+        cycle_realization = _lookup_object(
+            resp.result.cycle_realizations,
+            event.get_link("cycle-realization"),
+        )
         events.append(
             TimetableElement(
                 id=event.id,
@@ -81,6 +85,7 @@ def parse_events(resp: SearchEventsResult) -> list[TimetableElement]:
                     for a in upstream_attendees
                     if a.get_link("event-attendee-role") == "TEACH"  # Just in case
                 ],
+                team_name=cycle_realization.code if cycle_realization is not None else None,
             )
         )
     return events
