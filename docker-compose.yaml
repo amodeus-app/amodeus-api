@@ -8,10 +8,3 @@ services:
       - ALL
     ports:
       - "${PORT:-8000}:8000"
-    secrets:
-      - source: config
-        target: /app/config.yaml
-
-secrets:
-  config:
-    file: ./config.yaml

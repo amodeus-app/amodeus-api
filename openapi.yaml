@@ -1,0 +1,398 @@
+openapi: 3.0.3
+info:
+  title: AModeus
+  description: Alternative MODEUS API
+  version: 0.2.0  # It's API version, not the app version
+servers:
+  - url: https://api.amodeus.evgfilim1.me/v0.2
+    description: Production server
+  - url: http://localhost:8000
+    description: Local development server
+paths:
+  /people/search:
+    get:
+      tags:
+        - search
+      summary: Search people by part of their full name
+      operationId: searchPeople
+      parameters:
+        - required: true
+          schema:
+            title: Person name
+            type: string
+          name: q
+          in: query
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: List of people found
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Person"
+        '401':
+          "$ref": "#/components/responses/Unauthorized"
+#        '400':
+#          description: Validation Error
+#          content:
+#            application/json:
+#              schema:
+#                "$ref": "#/components/schemas/HTTPValidationError"
+      security:
+        - auth-token: []
+  /people/{id}:
+    get:
+      tags:
+        - search
+      summary: Get person by their UUID
+      operationId: getPerson
+      parameters:
+        - required: true
+          schema:
+            title: Person UUID
+            type: string
+            format: uuid
+          name: id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Person"
+        '401':
+          "$ref": "#/components/responses/Unauthorized"
+        '404':
+          description: Nothing found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/APIError"
+#        '400':
+#          description: Validation Error
+#          content:
+#            application/json:
+#              schema:
+#                "$ref": "#/components/schemas/HTTPValidationError"
+      security:
+        - auth-token: []
+  /people/{id}/timetable:
+    get:
+      tags:
+        - timetable
+      summary: Get timetable for specified person between `from` and `to` date
+      operationId: getPersonTimetable
+      parameters:
+        - required: true
+          schema:
+            title: Person UUID
+            type: string
+            format: uuid
+          name: id
+          in: path
+        - required: true
+          schema:
+            title: From date
+            description: Date in ISO 8601 format
+            type: string
+            format: date-time
+          name: from
+          in: query
+        - required: true
+          schema:
+            title: To date
+            description: Date in ISO 8601 format
+            type: string
+            format: date-time
+          name: to
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: List of events
+                type: array
+                items:
+                  "$ref": "#/components/schemas/TimetableElement"
+        '401':
+          "$ref": "#/components/responses/Unauthorized"
+#        '400':
+#          description: Validation Error
+#          content:
+#            application/json:
+#              schema:
+#                "$ref": "#/components/schemas/HTTPValidationError"
+      security:
+        - auth-token: []
+  /events/{id}/team:
+    get:
+      tags:
+        - timetable
+      summary: Get event team
+      operationId: getEventTeam
+      parameters:
+        - required: true
+          schema:
+            title: Event UUID
+            type: string
+            format: uuid
+          name: id
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: List of people participating in specified event
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Person"
+        '401':
+          "$ref": "#/components/responses/Unauthorized"
+#        '400':
+#          description: Validation Error
+#          content:
+#            application/json:
+#              schema:
+#                "$ref": "#/components/schemas/HTTPValidationError"
+      security:
+        - auth-token: []
+  /auth:
+    post:
+      tags:
+        - auth
+      summary: Authenticate user
+      operationId: auth
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  title: Username
+                  type: string
+                password:
+                  title: Password
+                  type: string
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Auth"
+        '401':
+          "$ref": "#/components/responses/Unauthorized"
+
+components:
+  schemas:
+    APIError:
+      title: APIError
+      required:
+        - detail
+      type: object
+      properties:
+        detail:
+          title: Detail
+          type: string
+    Auth:
+      title: Auth
+      required:
+        - access_token
+        - expires_in
+      type: object
+      properties:
+        access_token:
+          title: Access token
+          type: string
+          pattern: "[a-zA-Z0-9-_=]+\\.[a-zA-Z0-9-_=]+\\.[a-zA-Z0-9-_+/=]+"
+        expires_in:
+          title: Time until token expires in seconds
+          type: integer
+          minimum: 60
+        refresh_token:
+          title: Refresh token
+          type: string
+        token_type:
+          title: Token type
+          type: string
+          default: Bearer
+    Building:
+      title: Building
+      required:
+        - number
+        - address
+      type: object
+      properties:
+        number:
+          title: Number
+          type: integer
+        address:
+          title: Address
+          type: string
+    Lesson:
+      title: Lesson
+      required:
+        - subject
+        - name
+        - name_short
+        - type
+      type: object
+      properties:
+        subject:
+          "$ref": "#/components/schemas/Subject"
+        name:
+          title: Name
+          type: string
+        name_short:
+          title: Name Short
+          type: string
+        description:
+          title: Description
+          type: string
+        type:
+          title: Type
+          type: string
+        format:
+          title: Format
+          type: string
+    Location:
+      title: Location
+      required:
+        - full
+      type: object
+      properties:
+        building:
+          "$ref": "#/components/schemas/Building"
+        room:
+          title: Room
+          type: string
+        full:
+          title: Full
+          type: string
+    Person:
+      title: Person
+      required:
+        - id
+        - last_name
+        - first_name
+        - full_name
+      type: object
+      properties:
+        id:
+          title: Id
+          type: string
+          format: uuid
+        last_name:
+          title: Last Name
+          type: string
+        first_name:
+          title: First Name
+          type: string
+        middle_name:
+          title: Middle Name
+          type: string
+        full_name:
+          title: Full Name
+          type: string
+    Subject:
+      title: Subject
+      required:
+        - id
+        - name
+        - name_short
+      type: object
+      properties:
+        id:
+          title: Id
+          type: string
+          format: uuid
+        name:
+          title: Name
+          type: string
+        name_short:
+          title: Name Short
+          type: string
+    TimetableElement:
+      title: TimetableElement
+      required:
+        - id
+        - lesson
+        - start
+        - end
+        - teachers
+      type: object
+      properties:
+        id:
+          title: Id
+          type: string
+          format: uuid
+        lesson:
+          "$ref": "#/components/schemas/Lesson"
+        start:
+          title: Start
+          type: string
+          format: date-time
+        end:
+          title: End
+          type: string
+          format: date-time
+        location:
+          "$ref": "#/components/schemas/Location"
+        teachers:
+          title: Teachers
+          type: array
+          items:
+            "$ref": "#/components/schemas/Person"
+  securitySchemes:
+    auth-token:
+      type: oauth2
+      description: Upstream authentication
+      flows:
+        password:
+          scopes: {}
+          tokenUrl: auth
+  parameters:
+    page:
+      in: query
+      name: page
+      schema:
+        title: Page
+        type: integer
+        minimum: 1
+        default: 1
+    limit:
+      in: query
+      name: limit
+      schema:
+        title: Result limit
+        type: integer
+        minimum: 1
+        default: 10
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/APIError"
+
+tags:
+  - name: auth
+    description: Authentication
+  - name: marks
+    description: Marks and current results
+  - name: search
+    description: Search people
+  - name: timetable
+    description: Timetable

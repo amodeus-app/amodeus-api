@@ -1,19 +1,18 @@
-FROM python:3.10-slim AS build
+FROM gradle:7-jdk11 AS build
 
-RUN pip install --no-cache-dir 'build~=0.6.0.post1'
-WORKDIR /build
-COPY pyproject.toml setup.cfg ./
-COPY amodeus ./amodeus/
-RUN python -m build -w \
-    && python -m venv /app \
-    && /app/bin/python -m pip install $(find dist/ -iname '*.whl')[server]
+WORKDIR /home/gradle
+COPY --chown=gradle:gradle . ./
 
-FROM python:3.10-slim AS runtime
+RUN gradle installDist --no-daemon
+
+FROM openjdk:11
 EXPOSE 8000
 
-WORKDIR /app
-COPY --from=build /app ./
 RUN useradd -MrUd / -s /usr/sbin/nologin app
 
+COPY --from=build /home/gradle/build/install/* /app
+WORKDIR /app
+COPY openapi.yaml ./
+
 USER app
-ENTRYPOINT ["/app/bin/python", "-m", "uvicorn", "amodeus.app:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+ENTRYPOINT ["/bin/sh", "/app/bin/amodeus-api"]
