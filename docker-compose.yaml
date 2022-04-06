@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   api:
-    image: ghcr.io/evgfilim1/amodeus-api
+    image: ghcr.io/amodeus-app/amodeus-api
     restart: unless-stopped
     cap_drop:
       - ALL
