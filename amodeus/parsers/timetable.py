@@ -1,6 +1,7 @@
 import re
 
 from ..models import Building, Lesson, Location, Person, Subject, TimetableElement
+from ..upstream.models.event_attendee import EventAttendee
 from ..upstream.models.get_team_result import GetTeamResult
 from ..upstream.models.search_events_result import SearchEventsResult
 from .base import _lookup_object, _lookup_objects
@@ -51,6 +52,10 @@ def parse_events(resp: SearchEventsResult) -> list[TimetableElement]:
                 "links.event.href",
             )
         )
+        cycle_realization = _lookup_object(
+            resp.result.cycle_realizations,
+            event.get_link("cycle-realization"),
+        )
         events.append(
             TimetableElement(
                 id=event.id,
@@ -81,13 +86,21 @@ def parse_events(resp: SearchEventsResult) -> list[TimetableElement]:
                     for a in upstream_attendees
                     if a.get_link("event-attendee-role") == "TEACH"  # Just in case
                 ],
+                team_name=cycle_realization.code if cycle_realization is not None else None,
             )
         )
     return events
 
 
-def parse_event_team(resp: GetTeamResult) -> list[Person]:
+def _filter_role(attendee: EventAttendee, role: str | None) -> bool:
+    if role is None:
+        return True
+    return attendee.get_link("event-attendee-role") == role.upper()
+
+
+def parse_event_team(resp: GetTeamResult, role_filter: str | None = None) -> list[Person]:
     return [
         Person.parse_obj(_lookup_object(resp.result.persons, a.get_link("person")))
         for a in resp.result.event_attendees
+        if _filter_role(a, role_filter)
     ]

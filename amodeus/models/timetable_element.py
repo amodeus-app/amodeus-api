@@ -1,3 +1,5 @@
+__all__ = ["TimetableElement"]
+
 from datetime import datetime
 
 from .base import BaseIDModel
@@ -12,4 +14,5 @@ class TimetableElement(BaseIDModel):
     end: datetime
     location: Location | None
     teachers: list[Person]
+    team_name: str | None
     # is_held: bool
