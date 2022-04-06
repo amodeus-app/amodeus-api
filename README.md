@@ -18,7 +18,6 @@ YOUR OWN RISK.
 ### For self-hosting
 
 - Make sure docker and docker-compose are installed
-- Copy [example config](config.example.yaml), edit it and save as `config.yaml`
 - Copy [compose](docker-compose.yaml) file to the same directory as the config
 - Run `docker-compose up -d --build`
 - Set up your client to use API at `http://<yourip>:8000`
@@ -26,12 +25,9 @@ YOUR OWN RISK.
 ### For development
 
 - Clone this repo
-- Make sure Python 3.10+ is installed
-- Create virtualenv with `python -m venv .venv` and activate it
+- Make sure JDK is installed
 - Modify sources as needed
-- Install an app with `pip install -e .[dev] .[server]`
-- Copy [example config](config.example.yaml), edit it and save as `config.yaml`
-- Run it with `uvicorn --reload amodeus.app:app`
+- Build and run with `./gradlew run`
 - Set up your client to use API at `http://<yourip>:8000`
 
 ## Roadmap
@@ -45,4 +41,5 @@ YOUR OWN RISK.
   - [ ] Get marks for self
 - [ ] Monitor timetable changes
 - [ ] Write tests to make sure upstream didn't break API
+- [ ] Microservice architecture
 - [ ] Other features coming soon...
