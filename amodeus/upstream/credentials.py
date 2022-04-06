@@ -29,7 +29,7 @@ class ModeusCredentials:
         self._token = token
         self._auth_id = common_auth_id
         if session is None:
-            session = AsyncClient(http2=True, base_url="https://utmn.modeus.org/")
+            session = AsyncClient(http2=True, base_url="https://utmn.modeus.org/", timeout=15)
         self._session = session
         self._client_id = client_id
         self._auth_url = auth_url
@@ -103,7 +103,7 @@ class ModeusCredentials:
 
     @classmethod
     async def login(cls, login: str, password: str) -> ModeusCredentials:
-        session = AsyncClient(http2=True, base_url="https://utmn.modeus.org/")
+        session = AsyncClient(http2=True, base_url="https://utmn.modeus.org/", timeout=15)
         # Getting app config
         r = await session.get("/schedule-calendar/assets/app.config.json")
         data = r.json()["legacy"]["appConfig"]["httpAuth"]
