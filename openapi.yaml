@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: AModeus
   description: Alternative MODEUS API
-  version: 0.2.0  # It's API version, not the app version
+  version: 0.2.0-alpha.0  # It's API version, not the app version
 servers:
   - url: https://api.amodeus.evgfilim1.me/v0.2
     description: Production server
@@ -210,6 +210,7 @@ components:
       required:
         - access_token
         - expires_in
+        - person
       type: object
       properties:
         access_token:
@@ -227,6 +228,8 @@ components:
           title: Token type
           type: string
           default: Bearer
+        person:
+          "$ref": "#/components/schemas/Person"
     Building:
       title: Building
       required:

@@ -8,4 +8,5 @@ data class Auth(
     val expires_in: Long,
     val refresh_token: String? = null,
     val token_type: String = "Bearer",
+    val person: Person,
 )

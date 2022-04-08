@@ -7,9 +7,14 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import me.evgfilim1.amodeus.api.models.APIError
 import me.evgfilim1.amodeus.api.models.Auth
 import me.evgfilim1.amodeus.api.upstream.Modeus
+import me.evgfilim1.amodeus.api.utils.UUID
+import me.evgfilim1.amodeus.api.utils.json
+import java.util.*
 
 data class UserTokenPrincipal(val token: String, val refreshToken: String?) : Principal
 
@@ -32,7 +37,7 @@ class OAuth2PasswordBearerAuthenticationProvider private constructor(config: Con
 
 fun Authentication.Configuration.oauth2Password(
     name: String? = null,
-    configure: OAuth2PasswordBearerAuthenticationProvider.Configuration.() -> Unit,
+    configure: OAuth2PasswordBearerAuthenticationProvider.Configuration.() -> Unit = {},
 ) {
     val provider =
         OAuth2PasswordBearerAuthenticationProvider.Configuration(name).apply(configure).build()
@@ -63,7 +68,7 @@ fun Authentication.Configuration.oauth2Password(
 
 fun Application.configureSecurity() {
     install(Authentication) {
-        oauth2Password { }
+        oauth2Password()
     }
 
     routing {
@@ -80,16 +85,25 @@ fun Application.configureSecurity() {
                 HttpStatusCode.UnprocessableEntity,
                 APIError("password is missing"),
             )
-            call.respond(Auth(
-                Modeus.authenticate(username, password),
-                3600,
-            ))
-        }
-
-        authenticate {
-            get("me") {
-                call.respond("that's you!")
+            val accessToken = try {
+                Modeus.authenticate(username, password)
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.Unauthorized, APIError(e.message ?: "Unknown error"))
+                return@post
             }
+
+            val tokenData = Base64.getDecoder().decode(accessToken.split('.')[1]).let {
+                json.parseToJsonElement(it.toString(Charsets.UTF_8)).jsonObject
+            }
+
+            val self =
+                Modeus(accessToken).timetableClient.getPerson(
+                    UUID(tokenData["person_id"]!!.jsonPrimitive.content)
+                )!!
+            val expiresIn = tokenData["exp"]!!.jsonPrimitive.content.toLong() -
+                tokenData["iat"]!!.jsonPrimitive.content.toLong()
+
+            call.respond(Auth(accessToken, expires_in = expiresIn, person = self))
         }
     }
 }
