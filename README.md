@@ -2,6 +2,12 @@
 
 Middleware (API) for Alternative MODEUS app for UTMN Students.
 
+> [!IMPORTANT]
+> This app is no longer supported or developed as I'm no longer studying at University of Tyumen
+> (UTMN). The repository may be deleted at any time without prior notice, but not earlier
+> than 2027-01-01. If you need the code in this repo, consider forking, cloning and/or archiving
+> the contents.
+
 **DISCLAIMER:** THIS APP IS WORK IN PROGRESS, EVERYTHING CAN CHANGE OR BREAK ANY TIME. USE IT AT
 YOUR OWN RISK.
 
