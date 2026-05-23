@@ -11,6 +11,9 @@ Middleware (API) for Alternative MODEUS app for UTMN Students.
 **DISCLAIMER:** THIS APP IS WORK IN PROGRESS, EVERYTHING CAN CHANGE OR BREAK ANY TIME. USE IT AT
 YOUR OWN RISK.
 
+## Alternative project:
+[Calendar with Modeus, Netology and **LMS** integrations](https://github.com/depocoder/YetAnotherCalendar)
+
 ## Features
 
 - Get timetable of any user without logging in
