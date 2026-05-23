@@ -106,9 +106,8 @@ class ModeusCredentials:
         session = AsyncClient(http2=True, base_url="https://utmn.modeus.org/", timeout=15)
         # Getting app config
         r = await session.get("/schedule-calendar/assets/app.config.json")
-        data = r.json()["legacy"]["appConfig"]["httpAuth"]
-        auth_url = data["authUrl"]
-        client_id = data["clientId"]
+        client_id = r.json()["wso"]["clientId"]
+        auth_url = r.json()["wso"]["loginUrl"]
         # Getting auth URL
         auth_data = dict(
             client_id=client_id,
